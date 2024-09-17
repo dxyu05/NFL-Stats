@@ -21,6 +21,7 @@ results = soup.find(id="content")
 items = results.find("ul", class_="page_index")
 
 positions = set(["(QB)", "(RB)", "(WR)", "(TE)", "(K)"])
+offense = {"QB": [], "RB": [], "WR": [], "TE": [], "K": []}
 
 #Loops through each list item and builds a link to a letter
 for item in items:
@@ -36,16 +37,27 @@ for item in items:
 
         if bold.contents[-1].strip() in positions:
             link = "https://www.pro-football-reference.com"  + str(bold.find('a', href = True)['href'])
-            print(link)
+            
+            #sorts players by position
+            if bold.contents[-1].strip() == "(QB)":
+                offense["QB"].append(link)
+            elif bold.contents[-1].strip() == "(RB)":
+                offense["RB"].append(link)
+            elif bold.contents[-1].strip() == "(WR)":
+                offense["WR"].append(link)
+            elif bold.contents[-1].strip() == "(TE)":
+                offense["TE"].append(link)
+            else:
+                offense["K"].append(link)
         
     #Sleeps to avoid rate limiting as per PFR scraping guidlines
     time.sleep(4)
+    print(offense["K"])
 
 '''
 #Gets the table, apply below
 url = requests.get('https://www.pro-football-reference.com/players/E/EricAl01.htm')
 soup = BeautifulSoup(url.content, 'html.parser')
-position = (soup.findAll('p')[1].text)[0:14] #substring to get position
 print(position)
 c = url.content
 df = pd.read_html(c)[0]
